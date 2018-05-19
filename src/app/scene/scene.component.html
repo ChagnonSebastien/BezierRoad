@@ -1,2 +1,6 @@
-<div #canvas (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)">
-</div>
+<div #canvas
+    (mousedown)="onMouseDown($event)"
+    (mouseup)="onMouseUp($event)"
+    (mousemove)="onMouseMove($event)"
+    (wheel)="onWheelScrollEvent($event)"
+    oncontextmenu="return false;"></div>
