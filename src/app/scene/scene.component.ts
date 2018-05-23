@@ -1,6 +1,8 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { Scene, Mesh, Raycaster, WebGLRenderer, PlaneGeometry, MeshStandardMaterial, PointLight, AmbientLight, Vector3 } from 'three';
+import { Scene, Mesh, Raycaster, WebGLRenderer, PlaneGeometry, MeshStandardMaterial, PointLight, AmbientLight, Vector3, Color, Colors } from 'three';
 import { CameraControlService } from './camera-control.service';
+import { RoadBuilderService } from './road-builder.service';
+import { RoadBezierDisplay } from './road-bezier-display';
 
 enum DragType {
     CAMERA, ROAD_MOVE
@@ -25,18 +27,23 @@ export class SceneComponent implements AfterViewInit {
         return this.canvasRef.nativeElement;
     }
 
-    constructor(private cameraControlService: CameraControlService) {
+    constructor(
+        private cameraControlService: CameraControlService,
+        private roadBuilderService: RoadBuilderService,
+        private roadBezierDisplayService: RoadBezierDisplay
+    ) {
         this.renderer = new WebGLRenderer();
         this.scene = new Scene();
+        this.scene.background = new Color().setRGB(0.5, 0.5, 0.5);
         this.rayCaster = new Raycaster();
         
         const planegeometry = new PlaneGeometry(2000, 2000);
         planegeometry.rotateX(- Math.PI / 2);
-        const planematerial = new MeshStandardMaterial({color: 0xffffff, metalness: 0, roughness: 1});
+        const planematerial = new MeshStandardMaterial({color: 0x005C09, metalness: 0, roughness: 1});
         this.plane = new Mesh(planegeometry, planematerial);
         this.scene.add(this.plane);
 
-        const light = new PointLight('#105000', 2);
+        const light = new PointLight('#FFFFFF', 1);
         light.position.set(-500, 1000, 500)
         this.scene.add(light);
         this.scene.add(new AmbientLight('#FFFFFF', 0.2));
@@ -50,13 +57,14 @@ export class SceneComponent implements AfterViewInit {
 
     private animate(): void {
         window.requestAnimationFrame(() => this.animate());
+        this.roadBezierDisplayService.update(this.roadBuilderService.intersections, this.roadBuilderService.closed, this.scene);
         this.renderer.render(this.scene, this.cameraControlService.camera);
     }
 
     public onMouseMove(event: MouseEvent): void {
         const mouseLocation = this.getMouseLocation(event.clientX, event.clientY);
         this.cameraControlService.onMouseMove(event, mouseLocation);
-
+        this.roadBuilderService.onMouseMove(event, mouseLocation, this.scene);
     }
 
     private getMouseLocation(clientX: number, clientY: number): Vector3 {
@@ -69,20 +77,16 @@ export class SceneComponent implements AfterViewInit {
     public onMouseUp(event: MouseEvent): void {
         if (event.button === 1) {
             this.cameraControlService.stopDragging();
+        } else {
+            this.roadBuilderService.onMouseUp(event.button, this.scene);
         }
     }
 
     public onMouseDown(event: MouseEvent): void {
-        switch (event.button) {
-            case 0:
-            
-            break;
-            case 1:
+        if (event.button === 1) {
             this.cameraControlService.startDragging(event.clientX, event.clientY);
-            break;
-            case 2:
-            
-            break;
+        } else {
+            this.roadBuilderService.onMouseDown(event.button);
         }
     }
 

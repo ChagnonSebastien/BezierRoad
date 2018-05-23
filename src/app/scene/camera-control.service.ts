@@ -25,7 +25,7 @@ export class CameraControlService {
         this.cameraFocus = new Vector3(0, 0, 0);
 
         this._camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-        this._camera.position.set(300, 1000, 1000);
+        this._camera.position.set(100, 500, 200);
         this._camera.lookAt(this.cameraFocus);
     }
 
@@ -122,7 +122,7 @@ export class CameraControlService {
         const shift = this.camera.position.clone().sub(this.cameraFocus).multiplyScalar(delta * 0.001);
         const newPosition = this.camera.position.clone().add(shift);
         const newDistance = this.cameraFocus.distanceTo(newPosition);
-        if (newDistance > 2000 || newDistance < 50) {
+        if (newDistance > 2000 || newDistance < 200) {
             return;
         }
 

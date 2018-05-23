@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { SceneComponent } from './scene/scene.component';
 import { CameraControlService } from './scene/camera-control.service';
 import { RoadBuilderService } from './scene/road-builder.service';
+import { RoadBezierDisplay } from './scene/road-bezier-display';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { RoadBuilderService } from './scene/road-builder.service';
   ],
   providers: [
     CameraControlService,
-    RoadBuilderService
+    RoadBuilderService,
+    RoadBezierDisplay
   ],
   bootstrap: [AppComponent]
 })
